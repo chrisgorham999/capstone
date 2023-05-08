@@ -99,6 +99,83 @@ const Team = require("../models/gorham-team");
   });
 
 /**
+ * assignPlayerToTeam
+ * @openapi
+ * /api/teams/{id}/players:
+ *   post:
+ *     tags:
+ *       - Teams
+ *     name: assignPlayerToTeam
+ *     description: API for assigning a player to a team by teamID
+ *     summary: Assigns a player to a team by teamID
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The id of the team that the player will be assigned to
+ *         schema: 
+ *           type: string
+ *     requestBody:
+ *       description: The player information
+ *       content:
+ *         application/json:
+ *           schema:
+ *             required:
+ *               - firstName
+ *               - lastName
+ *               - salary
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               salary:
+ *                 type: number
+ *     responses:
+ *       '200':
+ *         description: Customer invoice added
+ *       '500':
+ *         description: Server Exception
+ *       '501':
+ *         description: MongoDB Exception
+ */
+ router.post('/teams/:id/players', async (req, res) => {
+    try {
+        await Team.findOne({'_id': req.params.id}, 
+        function(err, team){
+            let newPlayer = {
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                salary: req.body.salary
+            };
+
+            if (err){
+                console.log(err);
+                res.status(501).send({
+                    'message': `MongoDB Exception: ${err}` 
+                })
+            } else{
+                team.players.push(newPlayer);
+
+                team.save(function(err, Team){
+                    if(err){
+                        console.log(err);
+                    }else{
+                        console.log(Team);
+                        res.json(Team); 
+                    }
+                })
+            }
+        })
+    }catch(e){
+        console.log(e);
+        res.status(500).send({
+            'message': `Server Exception: ${e.message}`
+        })
+    }
+ });
+
+/**
  * deleteTeamById
  * @openapi
  * /api/teams/{id}:
