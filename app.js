@@ -62,7 +62,7 @@ const options = {
   const openapiSpecification = swaggerJsdoc(options);
   
   // wire openapiSpecification to app variable
-app.use("/home", swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+app.use("/index", swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 app.use("/api", teamAPI);
 
 // uses the http library to create a port and log to the console the port that is being listened to based on our port variable in the app
